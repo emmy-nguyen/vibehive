@@ -12,23 +12,24 @@ interface SidebarProps {
   children: React.ReactNode;
 }
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
-  const pathName = usePathname();
+  const pathname = usePathname();
+  const isSearchPage = pathname === "/search";
   const routes = useMemo(
     () => [
       {
         icon: HiHome,
         label: "Home",
-        active: pathName !== "/search",
+        active: !isSearchPage,
         href: "/",
       },
       {
         icon: BiSearch,
         label: "Search",
-        active: pathName === "/search",
+        active: isSearchPage,
         href: "/search",
       },
     ],
-    [pathName]
+    [pathname]
   );
   return (
     <div className="flex w-full">
