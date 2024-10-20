@@ -7,7 +7,7 @@ const figtree = Figtree({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "VibeHive",
-  description: "DoReMiFaSol: Where Every Note Tells a Story",
+  description: "MiFaSol",
 };
 
 export default function RootLayout({
