@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Figtree, Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
+import ModalProvider from "./providers/ModalProvider";
 
-const figtree = Figtree({ subsets: ["latin"] });
+const font = Figtree({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "VibeHive",
@@ -17,7 +18,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={figtree.className}>
+      <body className={font.className}>
+        <ModalProvider />
         <Sidebar>{children}</Sidebar>
       </body>
     </html>
