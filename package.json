@@ -11,10 +11,13 @@
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-form": "^0.1.0",
+    "@radix-ui/react-toast": "^1.2.2",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.35.2",
     "might-fail": "^0.6.3",
     "next": "^14.2.15",
+    "next-auth": "^4.24.8",
     "pg": "^8.13.0",
     "postgres": "^3.4.4",
     "react": "^18.3.1",
@@ -25,6 +28,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.16.12",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

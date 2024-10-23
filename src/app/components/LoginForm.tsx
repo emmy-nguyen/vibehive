@@ -1,7 +1,9 @@
 import * as Form from "@radix-ui/react-form";
 import Link from "next/link";
+import useAuthModal from "../hooks/useAuthModal";
 
 const LoginForm = () => {
+  const authModal = useAuthModal();
   return (
     <div className="flex items-center justify-center">
       <Form.Root className="w-full max-w-md bg-neutral-900 p-8 rounded-lg shadow-lg">
@@ -57,8 +59,9 @@ const LoginForm = () => {
           <p className="text-sm text-white">
             Don't have an account?{" "}
             <Link
-              href="/signup"
+              href="#"
               className="text-white underline hover:text-yellow-300"
+              onClick={() => authModal.onOpen(false)}
             >
               Sign up
             </Link>
