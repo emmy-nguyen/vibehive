@@ -1,12 +1,49 @@
+"use client";
+
 import * as Form from "@radix-ui/react-form";
+import { FormEvent } from "react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import useAuthModal from "../hooks/useAuthModal";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import ErrorToast from "./Error/ErrorToast";
 
 const LoginForm = () => {
+  const router = useRouter();
   const authModal = useAuthModal();
+  const [isToastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const response = await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
+
+    // handle error response
+    if (!response?.error) {
+      setToastMessage("Login successful");
+      router.push("/");
+      router.refresh();
+      authModal.onClose();
+      setToastOpen(true);
+    } else {
+      setToastMessage(`${response?.error}`);
+      console.log(response?.error);
+      setToastOpen(true);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center">
-      <Form.Root className="w-full max-w-md bg-neutral-900 p-8 rounded-lg shadow-lg">
+      <Form.Root
+        onSubmit={handleLogin}
+        className="w-full max-w-md bg-neutral-900 p-8 rounded-lg shadow-lg"
+      >
         {/* Email field */}
         <Form.Field className="mb-6" name="email">
           <div className="mb-2">
@@ -68,6 +105,15 @@ const LoginForm = () => {
           </p>
         </div>
       </Form.Root>
+
+      {/* Error Toast */}
+      {isToastOpen && (
+        <ErrorToast
+          title={toastMessage || "Something wrong when loging in..."}
+          isOpen={isToastOpen}
+          onOpenChange={setToastOpen}
+        />
+      )}
     </div>
   );
 };

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import { db } from "@/db/index";
+import { db, eq } from "@/db/index";
 import { users } from "@/db/schema/users";
 import { z } from "zod";
-import { eq } from "@/db/index";
 
 export async function POST(request: Request) {
   try {
@@ -59,7 +58,7 @@ export async function POST(request: Request) {
       const existingUser = await db
         .select()
         .from(users)
-        .where(eq(username, validUsername));
+        .where(eq(users.username, validUsername));
       if (existingUser.length > 0) {
         console.log("Username is already taken");
         return NextResponse.json({ message: "Username is already taken" });
@@ -68,23 +67,23 @@ export async function POST(request: Request) {
       const existingEmail = await db
         .select()
         .from(users)
-        .where(eq(email, validEmail));
+        .where(eq(users.email, validEmail));
       if (existingEmail.length > 0) {
         console.log("Email is already taken");
         return NextResponse.json({ message: "Email is already taken" });
       }
 
       // insert data to users table
-      const hashedPassword = await hash(password, 10);
+      const hashedPassword = await hash(validPassword, 10);
 
       const response = await db.insert(users).values({
-        username: username,
-        email: email,
+        username: validUsername,
+        email: validEmail,
         password: hashedPassword,
       });
     }
   } catch (e) {
-    console.log({ e });
+    console.log("error in signup in backend", e);
   }
   return NextResponse.json({ message: "success" });
 }

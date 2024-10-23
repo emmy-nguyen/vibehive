@@ -188,7 +188,7 @@ const SignupForm = () => {
       {/* Error Toast */}
       {isToastOpen && (
         <ErrorToast
-          title={toastMessage || "Something wrong"}
+          title={toastMessage || "Something wrong in singing up..."}
           isOpen={isToastOpen}
           onOpenChange={setToastOpen}
         />

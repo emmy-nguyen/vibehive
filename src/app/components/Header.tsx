@@ -5,6 +5,8 @@ import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
 import Button from "./Button";
 import useAuthModal from "../hooks/useAuthModal";
+import { signOut, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 
 interface HeaderProps {
   children: React.ReactNode;
@@ -12,10 +14,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ children, className }) => {
+  const { data: session } = useSession();
+  console.log(session);
   const authModal = useAuthModal();
   const router = useRouter();
   const handleLogout = () => {
-    // handle logout here
+    signOut();
   };
   return (
     <div
@@ -39,7 +43,6 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
             <RxCaretRight size={35} className="text-white" />
           </button>
         </div>
-
         {/* navigation for mobile view */}
         <div className="flex md:hidden gap-x-2 items-center">
           <button className="rounded-full p-2 bg-gray-700 flex items-center justify-center hover:opacity-75 transition">
@@ -49,28 +52,47 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
             <BiSearch className="text-gray-200" size={20} />
           </button>
         </div>
-
         {/* signin and logout section */}
-        <div className="flex justify-between items-center gap-x-4">
-          <>
-            <div>
-              <Button
-                onClick={() => authModal.onOpen(false)}
-                className="bg-transparent text-neutral-300 font-medium"
-              >
-                Sign up
-              </Button>
-            </div>
-            <div>
-              <Button
-                onClick={() => authModal.onOpen(true)}
-                className="bg-yellow-500 px-6 py-2 text-gray-800"
-              >
-                Log in
-              </Button>
-            </div>
-          </>
-        </div>
+        {!session ? (
+          <div className="flex justify-between items-center gap-x-4">
+            <>
+              <div>
+                <Button
+                  onClick={() => authModal.onOpen(false)}
+                  className="bg-transparent text-neutral-300 font-medium"
+                >
+                  Sign up
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={() => authModal.onOpen(true)}
+                  className="bg-yellow-500 px-6 py-2 text-gray-800"
+                >
+                  Log in
+                </Button>
+              </div>
+            </>
+          </div>
+        ) : (
+          <div className="flex justify-between items-center gap-x-4">
+            <>
+              <div>
+                <div className="bg-transparent text-gray-800 font-medium">
+                  Hello {session.user?.email}
+                </div>
+              </div>
+              <div>
+                <Button
+                  onClick={handleLogout}
+                  className="bg-yellow-500 px-6 py-2 text-gray-800"
+                >
+                  Log out
+                </Button>
+              </div>
+            </>
+          </div>
+        )}
       </div>
       {children}
     </div>
