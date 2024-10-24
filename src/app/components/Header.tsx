@@ -15,7 +15,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ children, className }) => {
   const { data: session } = useSession();
-  console.log(session);
   const authModal = useAuthModal();
   const router = useRouter();
   const handleLogout = () => {

@@ -7,7 +7,7 @@ import Link from "next/link";
 import useAuthModal from "../hooks/useAuthModal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ErrorToast from "./Error/ErrorToast";
+import ErrorToast from "./toastMessage/toastmessage";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -96,7 +96,7 @@ const LoginForm = () => {
           <p className="text-sm text-white">
             Don't have an account?{" "}
             <Link
-              href="#"
+              href="/apt/auth/signup"
               className="text-white underline hover:text-yellow-300"
               onClick={() => authModal.onOpen(false)}
             >

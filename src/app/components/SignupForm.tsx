@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent } from "react";
 import { useState } from "react";
 import { z } from "zod";
-import ErrorToast from "./Error/ErrorToast";
+import ErrorToast from "./toastMessage/toastmessage";
 
 const SignupForm = () => {
   {
