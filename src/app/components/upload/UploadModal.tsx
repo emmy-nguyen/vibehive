@@ -9,11 +9,12 @@ import Button from "../Button";
 import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { getSignedURL } from "./action";
+import { getSignedURL, uploadFile } from "./action";
+import ToastMessage from "../toastMessage/toastmessage";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [isToastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const uploadModal = useUploadModal();
   const { data: session } = useSession();
@@ -52,6 +53,8 @@ const UploadModal = () => {
     if (!open) {
       // close form, reset form
       reset();
+      setFile(undefined);
+      setFileUrl(undefined);
       uploadModal.onClose();
     }
   };
@@ -69,7 +72,6 @@ const UploadModal = () => {
 
   // upload song&image functionality
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
-    // submit form, handle form data
     try {
       setIsLoading(true);
 
@@ -93,9 +95,8 @@ const UploadModal = () => {
       });
 
       if (songSignedURLResult.failure !== undefined) {
-        toast.error("Failed to sign URL for song");
-        // setToastMessage("Failed to sign URL");
-        // setIsToastOpen(true);
+        setToastMessage("Failed to sign URL");
+        setToastOpen(true);
         console.error("error");
         return;
       }
@@ -109,9 +110,8 @@ const UploadModal = () => {
       });
 
       if (imageSignedURLResult.failure !== undefined) {
-        toast.error("Failed to sign URL for image");
-        // setToastMessage("Failed to sign URL");
-        // setIsToastOpen(true);
+        setToastMessage("Failed to sign URL for image");
+        setToastOpen(true);
         console.error("error");
         return;
       }
@@ -144,88 +144,81 @@ const UploadModal = () => {
       if (!imageUploadResponse.ok) {
         throw new Error("Image upload failed");
       }
-
-      toast.success("Song and image uploaded successfully");
-
-      // save the song to the database
-      // const response = await fetch("/api/songs", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     title: values.title,
-      //     artist: values.artist,
-      //     songPath: songUrl,
-      //     imagePath: imageUrl,
-      //     userId: user.id,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error("Failed to save song");
-      // }
-
-      // setToastMessage("created");
-      // setIsToastOpen(true);
-      // reset();
-      // console.log(songUrl);
-      // console.log(imageUrl);
-      // setToastMessage("created");
-      // setIsLoading(false);
+      await uploadFile({
+        title: values.title,
+        artist: values.artist,
+        songPath: songUrl,
+        imagePath: imageUrl,
+      });
+      setToastMessage("Song and image uploaded successfully");
+      onChange(false);
     } catch (error) {
-      toast.error("Something went wrong while uploading...");
+      setToastMessage("Something went wrong while uploading...");
     } finally {
       setIsLoading(false);
+      setToastOpen(false);
     }
   };
   return (
-    <Modal
-      title="Add a song"
-      description="Upload an MP3 file"
-      isOpen={uploadModal.isOpen}
-      onChange={onChange}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-        <Input
-          id="title"
-          disabled={isLoading}
-          {...register("artist", { required: true })}
-          placeholder="Song title"
-        />
-        <Input
-          id="artist"
-          disabled={isLoading}
-          {...register("artist", { required: true })}
-          placeholder="Song artist"
-        />
-        <div>
-          <div className="pb-1">Select a song file</div>
+    <div>
+      <Modal
+        title="Add a song"
+        description="Upload an MP3 file"
+        isOpen={uploadModal.isOpen}
+        onChange={onChange}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-4"
+        >
           <Input
-            id="song"
-            type="file"
+            id="title"
             disabled={isLoading}
-            accept=".mp3"
-            {...register("song", { required: true })}
-            onChange={handleChange}
+            {...register("artist", { required: "Title is required" })}
+            placeholder="Song title"
           />
-        </div>
-        <div>
-          <div className="pb-1">Select an image</div>
           <Input
-            id="image"
-            type="file"
+            id="artist"
             disabled={isLoading}
-            accept="image/*"
-            {...register("image", { required: true })}
-            onChange={handleChange}
+            {...register("artist", { required: "Artist name is required" })}
+            placeholder="Song artist"
           />
-        </div>
-        <Button disabled={isLoading} type="submit">
-          Upload
-        </Button>
-      </form>
-    </Modal>
+          <div>
+            <div className="pb-1">Select a song file</div>
+            <Input
+              id="song"
+              type="file"
+              disabled={isLoading}
+              accept=".mp3"
+              {...register("song", { required: "Song file is required" })}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <div className="pb-1">Select an image</div>
+            <Input
+              id="image"
+              type="file"
+              disabled={isLoading}
+              accept="image/*"
+              {...register("image", { required: "Image is required" })}
+              onChange={handleChange}
+            />
+          </div>
+          <Button disabled={isLoading} type="submit">
+            Upload
+          </Button>
+        </form>
+      </Modal>
+
+      {isToastOpen && (
+        <ToastMessage
+          title={toastMessage || "Something wrong in singing up..."}
+          isOpen={isToastOpen}
+          onOpenChange={setToastOpen}
+        />
+      )}
+    </div>
   );
 };
 

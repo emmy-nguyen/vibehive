@@ -15,8 +15,8 @@ export const songs = pgTable("songs", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  songPath: varchar("song_path", { length: 500 }).notNull(),
-  imagePath: varchar("image_path", { length: 500 }),
+  songPath: varchar("song_path", { length: 1024 }).notNull(),
+  imagePath: varchar("image_path", { length: 1024 }),
   userId: serial("user_id").references(() => users.id),
 });
 

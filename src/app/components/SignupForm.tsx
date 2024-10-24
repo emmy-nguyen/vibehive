@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent } from "react";
 import { useState } from "react";
 import { z } from "zod";
-import ErrorToast from "./toastMessage/toastmessage";
+import ToastMessage from "./toastMessage/toastmessage";
 
 const SignupForm = () => {
   {
@@ -187,7 +187,7 @@ const SignupForm = () => {
 
       {/* Error Toast */}
       {isToastOpen && (
-        <ErrorToast
+        <ToastMessage
           title={toastMessage || "Something wrong in singing up..."}
           isOpen={isToastOpen}
           onOpenChange={setToastOpen}

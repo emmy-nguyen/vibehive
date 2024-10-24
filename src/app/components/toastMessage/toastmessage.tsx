@@ -8,7 +8,11 @@ interface ToastProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const ErrorToast: React.FC<ToastProps> = ({ title, isOpen, onOpenChange }) => {
+const ToastMessage: React.FC<ToastProps> = ({
+  title,
+  isOpen,
+  onOpenChange,
+}) => {
   return (
     <Toast.Provider swipeDirection="right">
       <Toast.Root
@@ -34,4 +38,4 @@ const ErrorToast: React.FC<ToastProps> = ({ title, isOpen, onOpenChange }) => {
   );
 };
 
-export default ErrorToast;
+export default ToastMessage;

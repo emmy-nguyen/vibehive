@@ -4,6 +4,11 @@ import { getServerSession } from "next-auth";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { and, db, eq } from "@/db/index";
+import { songs } from "@/db/schema/songs";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 const generateFileName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
@@ -39,23 +44,23 @@ export async function getSignedURL({
   fileSize: number;
   checksum: string;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   console.log(session, "from action");
   if (!session) {
-    return { failure: "Not authenticated" };
+    return { failure: true, message: "Not authenticated" };
   }
 
   if (!acceptedTypes.includes(fileType)) {
-    return { failure: "Invalid file type" };
+    return { failure: true, message: "Invalid file type" };
   }
 
   if (fileType.startsWith("image/") && fileSize > imageMaxSize) {
-    return { failure: "Image size exceeds limit" };
+    return { failure: true, message: "Image size exceeds limit" };
   }
 
   if (fileType === "audio/mpeg" && fileSize > songMaxSize) {
-    return { failure: "Song size exceeds limit" };
+    return { failure: true, message: "Song size exceeds limit" };
   }
 
   const pubObjCommand = new PutObjectCommand({
@@ -73,4 +78,42 @@ export async function getSignedURL({
     expiresIn: 60,
   });
   return { success: { url: signedURL } };
+}
+
+// function uploadFile
+type UploadFileArgs = {
+  title: string;
+  artist: string;
+  songPath: string;
+  imagePath: string;
+};
+export async function uploadFile({
+  title,
+  artist,
+  songPath,
+  imagePath,
+}: UploadFileArgs) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { failure: true, message: "Not authenticated" };
+  }
+
+  if (!songPath && !imagePath && !title && !artist) {
+    return { failure: true, message: "No file to upload" };
+  }
+  const uploadedFile = await db
+    .insert(songs)
+    .values({
+      title: title,
+      artist: artist,
+      songPath: songPath,
+      imagePath: imagePath,
+      userId: Number(session.user?.id),
+      createdAt: new Date(),
+    })
+    .returning()
+    .then((res) => res[0]);
+
+  revalidatePath("/");
+  redirect("/");
 }

@@ -1,13 +1,34 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { db, eq } from "@/db/index";
 import { z } from "zod";
 import { users } from "@/db/schema/users";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
-const handler = NextAuth({
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  }
+}
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    } & DefaultSession["user"];
+  }
+}
+export const authOptions = {
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as SessionStrategy,
   },
   providers: [
     CredentialsProvider({
@@ -58,10 +79,36 @@ const handler = NextAuth({
         return {
           id: String(user.id),
           email: user.email,
+          name: user.username,
         };
       },
     }),
   ],
-});
+
+  // extend id, name key saving in tokens and session
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user?: any }) {
+      if (user) {
+        token.id = String(user.id);
+        token.name = user.username;
+        token.email = user.email;
+        console.log("token", token);
+      }
+      return token;
+    },
+
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email;
+        session.user.name = token.name;
+      }
+      console.log("auth", session.user);
+      return session;
+    },
+  },
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

@@ -7,7 +7,7 @@ import Link from "next/link";
 import useAuthModal from "../hooks/useAuthModal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ErrorToast from "./toastMessage/toastmessage";
+import ToastMessage from "./toastMessage/toastmessage";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -108,7 +108,7 @@ const LoginForm = () => {
 
       {/* Error Toast */}
       {isToastOpen && (
-        <ErrorToast
+        <ToastMessage
           title={toastMessage || "Something wrong when loging in..."}
           isOpen={isToastOpen}
           onOpenChange={setToastOpen}
