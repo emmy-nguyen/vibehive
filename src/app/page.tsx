@@ -1,21 +1,15 @@
 // "use client";
 import Image from "next/image";
 import Header from "./components/Header";
-import ListItem from "./components/ListItem";
-import { getSongs } from "./api/getFiles/get-songs-action";
-import { db, desc, eq } from "@/db";
-import { songs } from "@/db/schema/songs";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { getSongsByUser } from "../action/get-songs-by-user-action";
 import PageContent from "./components/getFiles/PageContent";
-import { useEffect, useState } from "react";
 import HeaderClient from "./components/headerClient/HeaderClient";
 
 // make sure page is not cached and always up-to-date
 // export const revalidate = 0;
 
 export default async function Home() {
-  const songsByUser = await getSongs();
+  const songsByUser = await getSongsByUser();
   console.log("songs by user", songsByUser);
 
   return (
