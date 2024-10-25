@@ -1,15 +1,13 @@
 "use client";
-import ModalProvider from "@/app/providers/ModalProvider";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { getSignedURL, uploadFile } from "../../api/upload/upload-action";
 import Modal from "../Modal";
 import useUploadModal from "../../hooks/useUploadModal";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
 import Input from "../Input";
 import Button from "../Button";
-import { useSession } from "next-auth/react";
-import toast, { Toaster } from "react-hot-toast";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { getSignedURL, uploadFile } from "./action";
+import toast from "react-hot-toast";
 import ToastMessage from "../toastMessage/toastmessage";
 
 const UploadModal = () => {
@@ -116,11 +114,11 @@ const UploadModal = () => {
         return;
       }
 
-      const songUrl = songSignedURLResult.success.url;
-      const imageUrl = imageSignedURLResult.success.url;
+      const songSignedUrl = songSignedURLResult.success.url;
+      const imageSignedUrl = imageSignedURLResult.success.url;
 
       // upload songs to S3
-      const songUploadResponse = await fetch(songUrl, {
+      const songUploadResponse = await fetch(songSignedUrl, {
         method: "PUT",
         body: songFile,
         headers: {
@@ -133,7 +131,7 @@ const UploadModal = () => {
       }
 
       // upload images to S3
-      const imageUploadResponse = await fetch(imageUrl, {
+      const imageUploadResponse = await fetch(imageSignedUrl, {
         method: "PUT",
         body: imageFile,
         headers: {
@@ -147,8 +145,8 @@ const UploadModal = () => {
       await uploadFile({
         title: values.title,
         artist: values.artist,
-        songPath: songUrl,
-        imagePath: imageUrl,
+        songPath: songSignedUrl,
+        imagePath: imageSignedUrl,
       });
       setToastMessage("Song and image uploaded successfully");
       onChange(false);

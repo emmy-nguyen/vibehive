@@ -1,28 +1,33 @@
-"use client";
+// "use client";
 import Image from "next/image";
 import Header from "./components/Header";
 import ListItem from "./components/ListItem";
+import { getSongs } from "./api/getFiles/get-songs-action";
+import { db, desc, eq } from "@/db";
+import { songs } from "@/db/schema/songs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import PageContent from "./components/getFiles/PageContent";
+import { useEffect, useState } from "react";
+import HeaderClient from "./components/headerClient/HeaderClient";
 
-export default function Home() {
+// make sure page is not cached and always up-to-date
+// export const revalidate = 0;
+
+export default async function Home() {
+  const songsByUser = await getSongs();
+  console.log("songs by user", songsByUser);
+
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
-      <Header>
-        <div className="mb-2">
-          <h1 className="text-white text-3xl font-semibold">Welcome back</h1>
-          <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 mt-4">
-            <ListItem
-              image="/images/Poster.jpeg"
-              name="Liked Songs"
-              href="liked"
-            />
-          </div>
-        </div>
-      </Header>
+      <HeaderClient />
       <div className="mt-2 mb-7 px-6">
         <div className="flex justify-between items-center">
           <h1 className="text-white font-semibold text-2xl">Newest songs</h1>
         </div>
-        <div>List of Songs</div>
+        <div>
+          <PageContent songs={songsByUser || []} />
+        </div>
       </div>
     </div>
   );

@@ -69,9 +69,9 @@ export async function getSignedURL({
     ContentType: fileType,
     ContentLength: fileSize,
     ChecksumSHA256: checksum,
-    // Metadata: {
-    //   userId: session.user?.name,
-    // },
+    Metadata: {
+      userId: session.user?.id,
+    },
   });
 
   const signedURL = await getSignedUrl(s3, pubObjCommand, {
@@ -106,13 +106,15 @@ export async function uploadFile({
     .values({
       title: title,
       artist: artist,
-      songPath: songPath,
-      imagePath: imagePath,
-      userId: Number(session.user?.id),
+      songPath: songPath.split("?")[0],
+      imagePath: imagePath.split("?")[0],
+      userId: parseInt(session.user?.id),
       createdAt: new Date(),
     })
     .returning()
     .then((res) => res[0]);
+
+  console.log("uploadedFile", uploadedFile);
 
   revalidatePath("/");
   redirect("/");

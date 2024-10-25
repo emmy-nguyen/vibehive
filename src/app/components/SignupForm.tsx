@@ -5,6 +5,7 @@ import { FormEvent } from "react";
 import { useState } from "react";
 import { z } from "zod";
 import ToastMessage from "./toastMessage/toastmessage";
+import useAuthModal from "../hooks/useAuthModal";
 
 const SignupForm = () => {
   {
@@ -12,6 +13,8 @@ const SignupForm = () => {
   }
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isToastOpen, setToastOpen] = useState(false);
+
+  const authModal = useAuthModal();
   {
     /* create a variable to validate input */
   }
@@ -82,6 +85,7 @@ const SignupForm = () => {
       if (result.message === "success") {
         setToastMessage("Signup successful");
         setToastOpen(true);
+        authModal.onClose();
       } else if (result.message === "Username is already taken") {
         setToastMessage("Username is already taken");
         setToastOpen(true);
@@ -96,6 +100,8 @@ const SignupForm = () => {
       console.log("Error signing up", error);
       setToastMessage("Error during signup process");
       setToastOpen(true);
+    } finally {
+      setToastOpen(false);
     }
   };
   return (

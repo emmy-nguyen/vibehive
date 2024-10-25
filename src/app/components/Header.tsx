@@ -7,6 +7,7 @@ import Button from "./Button";
 import useAuthModal from "../hooks/useAuthModal";
 import { signOut, useSession } from "next-auth/react";
 import { SessionProvider } from "next-auth/react";
+import Link from "next/link";
 
 interface HeaderProps {
   children: React.ReactNode;
@@ -77,14 +78,19 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
           <div className="flex justify-between items-center gap-x-4">
             <>
               <div>
-                <div className="bg-transparent text-gray-800 font-medium">
-                  Hello {session.user?.email}
+                <div className="bg-transparent text-neutral-800 font-medium">
+                  <Link
+                    href={`/${session.user.id}`}
+                    className="hover:text-white"
+                  >
+                    Hello {session.user?.email}
+                  </Link>
                 </div>
               </div>
               <div>
                 <Button
                   onClick={handleLogout}
-                  className="bg-yellow-500 px-6 py-2 text-gray-800"
+                  className="bg-yellow-500 px-6 py-2 text-neutral-800"
                 >
                   Log out
                 </Button>

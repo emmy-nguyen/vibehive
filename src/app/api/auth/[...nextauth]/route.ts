@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { db, eq } from "@/db/index";
 import { z } from "zod";
-import { users } from "@/db/schema/users";
+import { User, users } from "@/db/schema/users";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 
@@ -60,7 +60,12 @@ export const authOptions = {
         // if yes, check if Email is existing
         const { email, password } = validatedData.data;
         const response = await db
-          .select()
+          .select({
+            id: users.id,
+            username: users.username,
+            email: users.email,
+            password: users.password,
+          })
           .from(users)
           .where(eq(users.email, email));
 
@@ -68,7 +73,6 @@ export const authOptions = {
           throw new Error("Email not found");
         }
         const user = response[0];
-        console.log("login user", user);
 
         // check if password is matching
         const isPasswordValid = await compare(password || "", user.password);
