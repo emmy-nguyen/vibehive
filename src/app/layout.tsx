@@ -6,6 +6,7 @@ import ModalProvider from "./providers/ModalProvider";
 import { getServerSession } from "next-auth";
 import ClientSessionProvider from "./providers/ClientSessionProvider";
 import { getSongsByUser } from "../action/get-songs-by-user-action";
+import Player from "./components/player/Player";
 
 const font = Figtree({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
         <ClientSessionProvider session={session}>
           <ModalProvider />
           <Sidebar songs={userSongs}>{children}</Sidebar>
+          <Player />
         </ClientSessionProvider>
       </body>
     </html>
