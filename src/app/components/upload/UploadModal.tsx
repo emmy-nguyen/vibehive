@@ -72,7 +72,6 @@ const UploadModal = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       setIsLoading(true);
-
       const imageFile = values.image?.[0];
       const songFile = values.song?.[0];
 
@@ -85,37 +84,55 @@ const UploadModal = () => {
       const checksumSongFile = await computeSHA256(songFile);
 
       // get signedURL for the song file
-      const songSignedURLResult = await getSignedURL({
-        fileName: songFile.name,
-        fileType: songFile.type,
-        fileSize: songFile.size,
-        checksum: checksumSongFile,
-      });
+      const [songSignedURLResult, imageSignedURLResult] = await Promise.all([
+        getSignedURL({
+          fileName: songFile.name,
+          fileType: songFile.type,
+          fileSize: songFile.size,
+          checksum: checksumSongFile,
+        }),
+        getSignedURL({
+          fileName: imageFile.name,
+          fileType: imageFile.type,
+          fileSize: imageFile.size,
+          checksum: checksumImageFile,
+        }),
+      ]);
 
-      if (songSignedURLResult.failure !== undefined) {
-        setToastMessage("Failed to sign URL");
-        setToastOpen(true);
-        console.error("error");
+      console.log("url result", songSignedURLResult, imageSignedURLResult);
+      // const songSignedURLResult = await getSignedURL({
+      //   fileName: songFile.name,
+      //   fileType: songFile.type,
+      //   fileSize: songFile.size,
+      //   checksum: checksumSongFile,
+      // });
+
+      if (
+        songSignedURLResult.failure !== undefined ||
+        imageSignedURLResult.failure !== undefined
+      ) {
+        console.error(
+          "Failed to get signed URL for song and image",
+          songSignedURLResult.failure,
+          imageSignedURLResult.failure
+        );
+
+        // setToastMessage("Failed to sign URL");
+        // setToastOpen(true);
         return;
       }
 
       // get signedURL for the image file
-      const imageSignedURLResult = await getSignedURL({
-        fileName: imageFile.name,
-        fileType: imageFile.type,
-        fileSize: imageFile.size,
-        checksum: checksumImageFile,
-      });
-
-      if (imageSignedURLResult.failure !== undefined) {
-        setToastMessage("Failed to sign URL for image");
-        setToastOpen(true);
-        console.error("error");
-        return;
-      }
+      // const imageSignedURLResult = await getSignedURL({
+      //   fileName: imageFile.name,
+      //   fileType: imageFile.type,
+      //   fileSize: imageFile.size,
+      //   checksum: checksumImageFile,
 
       const songSignedUrl = songSignedURLResult.success.url;
       const imageSignedUrl = imageSignedURLResult.success.url;
+      console.log(songSignedUrl);
+      console.log(imageSignedUrl);
 
       // upload songs to S3
       const songUploadResponse = await fetch(songSignedUrl, {
@@ -127,6 +144,12 @@ const UploadModal = () => {
       });
 
       if (!songUploadResponse.ok) {
+        console.error(
+          "Song upload failed",
+          songUploadResponse.status,
+          songUploadResponse.statusText
+        );
+
         throw new Error("Song upload failed");
       }
 
@@ -140,6 +163,12 @@ const UploadModal = () => {
       });
 
       if (!imageUploadResponse.ok) {
+        console.error(
+          "Image upload failed",
+          imageUploadResponse.status,
+          imageUploadResponse.statusText
+        );
+
         throw new Error("Image upload failed");
       }
       await uploadFile({
@@ -150,8 +179,23 @@ const UploadModal = () => {
       });
       setToastMessage("Song and image uploaded successfully");
       onChange(false);
+      reset();
+      // });
+
+      // if (imageSignedURLResult.failure !== undefined) {
+      //   console.error(
+      //     "Failed to get signed URL for image",
+      //     imageSignedURLResult.failure
+      //   );
+
+      // setToastMessage("Failed to sign URL for image");
+      // setToastOpen(true);
+      console.error("error");
+      return;
     } catch (error) {
-      setToastMessage("Something went wrong while uploading...");
+      console.error("Error in file upload process:", error);
+
+      // setToastMessage("Something went wrong while uploading...");
     } finally {
       setIsLoading(false);
       setToastOpen(false);
@@ -172,7 +216,7 @@ const UploadModal = () => {
           <Input
             id="title"
             disabled={isLoading}
-            {...register("artist", { required: "Title is required" })}
+            {...register("title", { required: "Title is required" })}
             placeholder="Song title"
           />
           <Input

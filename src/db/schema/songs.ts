@@ -10,7 +10,7 @@ import { users } from "./users";
 
 export const songs = pgTable("songs", {
   id: serial("id").primaryKey().notNull(),
-  title: varchar("username", { length: 500 }).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
   artist: varchar("artist", { length: 500 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
