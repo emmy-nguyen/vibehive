@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
+import TableHeader from "@/app/components/TableHeader";
+import React from "react";
+import { Song } from "../../../../types";
+import SongList from "@/app/components/SongList";
 
 export default async function Profile({
   user,
+  songs,
 }: {
   user: {
     username?: string | null;
   };
+  songs: Song[];
 }) {
   return (
     <div className="bg-neutral-900 min-h-screen text-white">
@@ -25,6 +30,9 @@ export default async function Profile({
           Edit Profile
         </button>
       </header>
+
+      <TableHeader />
+      <SongList initialSongs={songs} />
     </div>
   );
 }

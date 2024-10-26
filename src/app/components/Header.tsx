@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
               <div>
                 <div className="bg-transparent text-neutral-800 font-medium">
                   <Link
-                    href={`/${session.user.id}`}
+                    href={`/user/${session.user.id}`}
                     className="hover:text-white"
                   >
                     Hello {session.user?.email}

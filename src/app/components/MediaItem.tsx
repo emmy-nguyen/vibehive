@@ -20,13 +20,12 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
       onClick={handleClick}
       className="flex items-center gap-x-3 cursor-pointer hover:bg-neutral-800/50 w-full p-2 rounded-md"
     >
-      <div className="relative rounded-md min-h-[48px] max-h-[48px] overflow-hidden">
+      <div className="relative rounded-md min-h-[48px] max-h-[48px] w-[48px] h-[48px] overflow-hidden">
         <Image
-          fill
+          fill // have to use "w-[48px] h-[48px]"" in div to use "fill"
           src="/images/default.jpeg"
           alt="Media Item"
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden">

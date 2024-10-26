@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) {
-    return NextResponse.json({ message: "Invalid songId" }, { status: 400 });
+    return NextResponse.json({ message: "Invalid imageId" }, { status: 400 });
   }
 
   try {
@@ -17,15 +17,15 @@ export async function GET(request: Request) {
       .where(eq(songs.id, parseInt(id)))
       .limit(1);
 
-    console.log("getSongUrl", JSON.stringify(result, null, 2));
+    console.log("getImageUrl", JSON.stringify(result, null, 2));
     if (result.length > 0) {
-      return NextResponse.json({ url: result[0].songPath });
+      return NextResponse.json({ url: result[0].imagePath });
     } else {
       return NextResponse.json({ message: "Song not found" }, { status: 404 });
     }
   } catch (err) {
     return NextResponse.json(
-      { message: "Error fetching song URL" },
+      { message: "Error fetching image URL" },
       { status: 500 }
     );
   }

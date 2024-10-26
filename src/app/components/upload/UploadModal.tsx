@@ -8,7 +8,7 @@ import Input from "../Input";
 import Button from "../Button";
 import toast from "react-hot-toast";
 import ToastMessage from "../toastMessage/toastmessage";
-import { getSignedURL, uploadFile } from "@/app/action/upload-action";
+import { getSignedURL, uploadFile } from "@/app/_action/upload-action";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -100,12 +100,6 @@ const UploadModal = () => {
       ]);
 
       console.log("url result", songSignedURLResult, imageSignedURLResult);
-      // const songSignedURLResult = await getSignedURL({
-      //   fileName: songFile.name,
-      //   fileType: songFile.type,
-      //   fileSize: songFile.size,
-      //   checksum: checksumSongFile,
-      // });
 
       if (
         songSignedURLResult.failure !== undefined ||

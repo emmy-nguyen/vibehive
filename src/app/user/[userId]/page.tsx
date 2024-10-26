@@ -2,6 +2,8 @@ import { db, eq } from "@/db/index";
 import { users } from "@/db/schema/users";
 import React from "react";
 import Profile from "./profile";
+import { songs } from "@/db/schema/songs";
+import { getSongsByUser } from "@/app/_action/get-songs-by-user-action";
 
 export default async function ProfilePage({
   params,
@@ -18,5 +20,7 @@ export default async function ProfilePage({
     return <div>User not found</div>;
   }
 
-  return <Profile user={user} />;
+  const songsByUser = await getSongsByUser();
+
+  return <Profile user={user} songs={songsByUser || []} />;
 }
