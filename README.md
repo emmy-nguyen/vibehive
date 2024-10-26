@@ -1,6 +1,18 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/L8HO5Gk1)
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## About the project
+
+It is a spotify-clone music app called VibeHive
+
+All functionalities:
+
+- Sign up an account
+- Log in and log out
+- Upload a music file including an image
+- Play music
+- Delete music files from the user's profile
+
 ## Getting Started
 
 First, run the development server:

@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import useUploadModal from "../hooks/useUploadModal";
 import { Song } from "../../../types";
 import MediaItem from "./MediaItem";
+import { useEffect, useState } from "react";
 
 interface LibraryProps {
   songs: Song[];
@@ -16,7 +17,7 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
   const authModal = useAuthModal();
   const uploadModal = useUploadModal();
   const { data: session } = useSession();
-  const onClick = () => {
+  const handleOpen = () => {
     if (!session) {
       return authModal.onOpen();
     }
@@ -30,7 +31,7 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
           <p className="text-neutral-400 font-medium text-md">Your Library</p>
         </div>
         <AiOutlinePlus
-          onClick={onClick}
+          onClick={handleOpen}
           className=" text-neutral-400 cursor-pointer hover:text-white transition"
           size={20}
         />

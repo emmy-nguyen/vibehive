@@ -32,7 +32,11 @@ export default async function Profile({
       </header>
 
       <TableHeader />
-      <SongList initialSongs={songs} />
+      {songs && songs.length > 0 ? (
+        <SongList initialSongs={songs} />
+      ) : (
+        <div className="mx-8 text-neutral-400">No song available</div>
+      )}
     </div>
   );
 }
