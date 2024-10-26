@@ -5,7 +5,7 @@ import Sidebar from "./components/Sidebar";
 import ModalProvider from "./providers/ModalProvider";
 import { getServerSession } from "next-auth";
 import ClientSessionProvider from "./providers/ClientSessionProvider";
-import { getSongsByUser } from "../action/get-songs-by-user-action";
+import { getSongsByUser } from "@/app/action/get-songs-by-user-action";
 import Player from "./components/player/Player";
 
 const font = Figtree({ subsets: ["latin"] });
@@ -22,7 +22,6 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession();
   const userSongs = (await getSongsByUser()) || [];
-  console.log(userSongs);
   return (
     <html lang="en">
       <body className={font.className}>

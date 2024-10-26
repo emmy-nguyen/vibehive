@@ -1,8 +1,8 @@
 "use server";
 import { songs } from "@/db/schema/songs";
-import { authOptions } from "../app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { db, desc, eq } from "@/db/index";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export async function getSongsByUser() {
   const session = await getServerSession(authOptions);

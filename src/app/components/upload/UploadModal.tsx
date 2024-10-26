@@ -2,13 +2,13 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { getSignedURL, uploadFile } from "../../api/upload/upload-action";
 import Modal from "../Modal";
 import useUploadModal from "../../hooks/useUploadModal";
 import Input from "../Input";
 import Button from "../Button";
 import toast from "react-hot-toast";
 import ToastMessage from "../toastMessage/toastmessage";
+import { getSignedURL, uploadFile } from "@/app/action/upload-action";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -122,13 +122,6 @@ const UploadModal = () => {
         return;
       }
 
-      // get signedURL for the image file
-      // const imageSignedURLResult = await getSignedURL({
-      //   fileName: imageFile.name,
-      //   fileType: imageFile.type,
-      //   fileSize: imageFile.size,
-      //   checksum: checksumImageFile,
-
       const songSignedUrl = songSignedURLResult.success.url;
       const imageSignedUrl = imageSignedURLResult.success.url;
       console.log(songSignedUrl);
@@ -180,13 +173,6 @@ const UploadModal = () => {
       setToastMessage("Song and image uploaded successfully");
       onChange(false);
       reset();
-      // });
-
-      // if (imageSignedURLResult.failure !== undefined) {
-      //   console.error(
-      //     "Failed to get signed URL for image",
-      //     imageSignedURLResult.failure
-      //   );
 
       // setToastMessage("Failed to sign URL for image");
       // setToastOpen(true);

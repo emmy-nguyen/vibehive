@@ -1,7 +1,4 @@
-// "use client";
-import Image from "next/image";
-import Header from "./components/Header";
-import { getSongsByUser } from "../action/get-songs-by-user-action";
+import { getSongsByUser } from "@/app/action/get-songs-by-user-action";
 import PageContent from "./components/getFiles/PageContent";
 import HeaderClient from "./components/headerClient/HeaderClient";
 
@@ -10,7 +7,7 @@ import HeaderClient from "./components/headerClient/HeaderClient";
 
 export default async function Home() {
   const songsByUser = await getSongsByUser();
-  console.log("songs by user", songsByUser);
+  // console.log("songs by user", songsByUser);
 
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
