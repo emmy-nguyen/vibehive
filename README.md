@@ -3,7 +3,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## About the project
 
-It is a spotify-clone music app called VibeHive
+It is a spotify-clone music app called VibeHive.
 
 All functionalities:
 
@@ -13,6 +13,12 @@ All functionalities:
 - Play music
 - Edit song's information
 - Delete music files from the user's profile
+
+Not Implemented yet:
+
+- Edit user's profile
+- Search (optional)
+- Liked song (optional)
 
 ## Getting Started
 
