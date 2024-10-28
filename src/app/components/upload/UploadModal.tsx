@@ -7,19 +7,20 @@ import useUploadModal from "../../hooks/useUploadModal";
 import Input from "../Input";
 import Button from "../Button";
 import toast from "react-hot-toast";
-import ToastMessage from "../toastMessage/toastmessage";
+// import ToastMessage from "../toastMessage/toastmessage";
 import { getSignedURL, uploadFile } from "@/app/_action/upload-action";
 import computeSHA256 from "@/app/_helper/computeSHA256";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isToastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // const [isToastOpen, setToastOpen] = useState(false);
+  // const [toastMessage, setToastMessage] = useState<string | null>(null);
   const uploadModal = useUploadModal();
   const { data: session } = useSession();
   const user = session?.user;
   const [file, setFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
+  // const { toasts, handlers } = useToaster();
 
   const { register, handleSubmit, reset } = useForm<FieldValues>({
     defaultValues: {
@@ -65,7 +66,7 @@ const UploadModal = () => {
       const imageFile = values.image?.[0];
       const songFile = values.song?.[0];
 
-      if (!imageFile || !songFile || !user) {
+      if (!imageFile || !songFile || !user || !values.title || !values.artist) {
         toast.error("Missing fields");
         return;
       }
@@ -89,8 +90,6 @@ const UploadModal = () => {
         }),
       ]);
 
-      console.log("url result", songSignedURLResult, imageSignedURLResult);
-
       if (
         songSignedURLResult.failure !== undefined ||
         imageSignedURLResult.failure !== undefined
@@ -100,16 +99,12 @@ const UploadModal = () => {
           songSignedURLResult.failure,
           imageSignedURLResult.failure
         );
-
-        // setToastMessage("Failed to sign URL");
-        // setToastOpen(true);
+        toast.error("Failed to get signed URL for song and image");
         return;
       }
 
       const songSignedUrl = songSignedURLResult.success.url;
       const imageSignedUrl = imageSignedURLResult.success.url;
-      console.log(songSignedUrl);
-      console.log(imageSignedUrl);
 
       // upload songs to S3
       const songUploadResponse = await fetch(songSignedUrl, {
@@ -121,12 +116,7 @@ const UploadModal = () => {
       });
 
       if (!songUploadResponse.ok) {
-        console.error(
-          "Song upload failed",
-          songUploadResponse.status,
-          songUploadResponse.statusText
-        );
-
+        toast.error("Song upload failed");
         throw new Error("Song upload failed");
       }
 
@@ -145,7 +135,7 @@ const UploadModal = () => {
           imageUploadResponse.status,
           imageUploadResponse.statusText
         );
-
+        toast.error("Image upload failed");
         throw new Error("Image upload failed");
       }
       await uploadFile({
@@ -154,21 +144,14 @@ const UploadModal = () => {
         songPath: songSignedUrl,
         imagePath: imageSignedUrl,
       });
-      setToastMessage("Song and image uploaded successfully");
+      toast.success("Uploaded successfully!");
       onChange(false);
       reset();
-
-      // setToastMessage("Failed to sign URL for image");
-      // setToastOpen(true);
-      console.error("error");
-      return;
     } catch (error) {
-      console.error("Error in file upload process:", error);
-
-      // setToastMessage("Something went wrong while uploading...");
+      toast.error("Something went wrong while uploading...");
+      console.error("Something went wrong while uploading...", error);
     } finally {
       setIsLoading(false);
-      setToastOpen(false);
     }
   };
   return (
@@ -222,14 +205,6 @@ const UploadModal = () => {
           </Button>
         </form>
       </Modal>
-
-      {isToastOpen && (
-        <ToastMessage
-          title={toastMessage || "Something wrong in singing up..."}
-          isOpen={isToastOpen}
-          onOpenChange={setToastOpen}
-        />
-      )}
     </div>
   );
 };

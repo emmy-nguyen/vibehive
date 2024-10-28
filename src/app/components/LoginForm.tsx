@@ -8,12 +8,13 @@ import useAuthModal from "../hooks/useAuthModal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ToastMessage from "./toastMessage/toastmessage";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const router = useRouter();
   const authModal = useAuthModal();
-  const [isToastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // const [isToastOpen, setToastOpen] = useState(false);
+  // const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,15 +27,18 @@ const LoginForm = () => {
 
     // handle error response
     if (!response?.error) {
-      setToastMessage("Login successful");
+      // setToastMessage("Login successful");
+
       router.push("/");
       router.refresh();
+      toast.success("Login successful");
       authModal.onClose();
-      setToastOpen(true);
+      // setToastOpen(true);
     } else {
-      setToastMessage(`${response?.error}`);
+      // setToastMessage(`${response?.error}`);
       console.log(response?.error);
-      setToastOpen(true);
+      // setToastOpen(true);
+      toast.error(`${response?.error}`);
     }
   };
 
@@ -107,13 +111,13 @@ const LoginForm = () => {
       </Form.Root>
 
       {/* Error Toast */}
-      {isToastOpen && (
+      {/* {isToastOpen && (
         <ToastMessage
           title={toastMessage || "Something wrong when loging in..."}
           isOpen={isToastOpen}
           onOpenChange={setToastOpen}
         />
-      )}
+      )} */}
     </div>
   );
 };

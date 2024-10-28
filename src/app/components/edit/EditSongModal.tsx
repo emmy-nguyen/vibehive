@@ -12,6 +12,7 @@ import Image from "next/image";
 import { editSong } from "@/app/_action/edit-action";
 import { getSignedURL } from "@/app/_action/upload-action";
 import computeSHA256 from "@/app/_helper/computeSHA256";
+import toast from "react-hot-toast";
 
 const EditSongModal = () => {
   const { data: session } = useSession();
@@ -96,21 +97,20 @@ const EditSongModal = () => {
 
       if (!title || !artist) {
         console.log("Missing fields");
-        // toast.error("Missing fields");
+        toast.error("Missing fields");
         return;
       }
 
-      // URLs for new S3 upload files
-      let newSongPath = songPreview;
-      let newImagePath = imagePreview;
-      let oldSongPath = "";
-      let oldImagePath = "";
-
-      const songCheckSum = await computeSHA256(song);
-      const imageCheckSum = await computeSHA256(image);
+      // declare newSongPath and newImagePath for new S3 upload files
+      let newSongPath = undefined;
+      let newImagePath = undefined;
+      let updateTitle = title !== songData?.title ? title : songData?.title;
+      let updateArtist =
+        artist !== songData?.artist ? artist : songData?.artist;
 
       // if new song is added, get signed URL for the new song
       if (song instanceof File) {
+        const songCheckSum = await computeSHA256(song);
         const songSignedURLResult = await getSignedURL({
           fileName: song.name,
           fileType: song.type,
@@ -119,13 +119,13 @@ const EditSongModal = () => {
         });
 
         if (songSignedURLResult.failure !== undefined) {
-          console.error("Error to get signed URL for song and image");
+          toast.error("Error to get signed URL for song ");
+          console.error("Error to get signed URL for song ");
           return;
         }
         const songSignedUrl = songSignedURLResult.success.url;
-        console.log("Line 155 songSignedURL: " + songSignedUrl);
 
-        const songUploadResponse = await fetch(songSignedUrl, {
+        await fetch(songSignedUrl, {
           method: "PUT",
           body: song,
           headers: {
@@ -133,17 +133,11 @@ const EditSongModal = () => {
           },
         });
         newSongPath = songSignedUrl.split("?")[0];
-        console.log("Line 165: " + newSongPath);
-
-        // delete the old song file in S3 bucket
-        if (songData?.songUrl) {
-          oldSongPath = songData?.songUrl;
-        }
       }
-      console.log("Line 176: try to delete the old song");
 
       // if new image is added, get signed URL for the new image
       if (image instanceof File) {
+        const imageCheckSum = await computeSHA256(image);
         const imageSignedURLResult = await getSignedURL({
           fileName: image.name,
           fileType: image.type,
@@ -151,13 +145,13 @@ const EditSongModal = () => {
           checksum: imageCheckSum,
         });
         if (imageSignedURLResult.failure !== undefined) {
-          console.error("Error to get signed URL for song and image");
+          toast.error("Error to get signed URL for image");
+          console.error("Error to get signed URL for image");
           return;
         }
         const imageSignedUrl = imageSignedURLResult.success.url;
-        console.log("Line 192: ", imageSignedUrl);
 
-        const imageUploadResponse = await fetch(imageSignedUrl, {
+        await fetch(imageSignedUrl, {
           method: "PUT",
           body: image,
           headers: {
@@ -165,30 +159,25 @@ const EditSongModal = () => {
           },
         });
         newImagePath = imageSignedUrl.split("?")[0];
-        console.log("Line 203: ", newImagePath);
-
-        // delete the old image file in S3 bucket
-        if (songData?.imageUrl) {
-          oldImagePath = songData?.imageUrl;
-        }
       }
-      console.log("Line 215: try to delete the old img");
 
-      // call editSong from action
-      await editSong(
-        songId,
-        title,
-        artist,
-        oldImagePath,
-        oldSongPath,
-        newSongPath,
-        newImagePath
-      );
-      console.log("Line 219: update song");
-
-      setIsLoading(false);
-      editModal.onClose();
+      if (songData?.songUrl && songData?.imageUrl) {
+        await editSong(songId, {
+          title: updateTitle,
+          artist: updateArtist,
+          oldSongPath: songData.songUrl,
+          newSongPath:
+            newSongPath !== songData.songUrl ? newSongPath : undefined,
+          oldImagePath: songData?.imageUrl,
+          newImagePath:
+            newImagePath !== songData.imageUrl ? newImagePath : undefined,
+        });
+        setIsLoading(false);
+        editModal.onClose();
+        toast.success("Song edited successfully");
+      }
     } catch (err) {
+      toast.error("Error editing song");
       console.error("Error editing song:", err);
     } finally {
       setIsLoading(false);

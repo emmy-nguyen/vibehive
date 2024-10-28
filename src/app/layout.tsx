@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import ClientSessionProvider from "./providers/ClientSessionProvider";
 import { getSongsByUser } from "@/app/_action/get-songs-by-user-action";
 import Player from "./components/player/Player";
+import ToasterProvider from "./providers/ToasterProvider";
 
 const font = Figtree({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={font.className}>
         <ClientSessionProvider session={session}>
+          <ToasterProvider />
           <ModalProvider />
           <Sidebar songs={userSongs}>{children}</Sidebar>
           <Player />

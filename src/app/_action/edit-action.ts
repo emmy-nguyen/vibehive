@@ -17,19 +17,28 @@ const s3 = new S3Client({
 
 export async function editSong(
   songId: number,
-  newTitle: string,
-  newArtist: string,
-  oldImagePath: string,
-  oldSongPath: string,
-  newSongPath?: string,
-  newImagePath?: string
+  {
+    title,
+    artist,
+    oldSongPath,
+    newSongPath,
+    oldImagePath,
+    newImagePath,
+  }: {
+    title?: string;
+    artist?: string;
+    oldImagePath: string;
+    oldSongPath: string;
+    newSongPath?: string;
+    newImagePath?: string;
+  }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return { failure: "Not authenticated" };
   }
 
-  if (!newSongPath && !newSongPath && !newTitle && !newArtist) {
+  if (!newSongPath && !newSongPath && !title && !artist) {
     return { failure: "No field" };
   }
   await db.transaction(async (tx) => {
@@ -46,28 +55,33 @@ export async function editSong(
       return { failure: "Song not found" };
     }
 
-    // delete old song and image from S3 bucket
-    const deleteSongObjectCommand = new DeleteObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: oldSongPath.split("/").pop()!,
-    });
-    await s3.send(deleteSongObjectCommand);
+    if (newSongPath && newSongPath !== oldSongPath) {
+      // delete old song and image from S3 bucket
+      const deleteSongObjectCommand = new DeleteObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: oldSongPath.split("/").pop()!,
+      });
+      await s3.send(deleteSongObjectCommand);
+    }
 
-    const deleteImageObjectCommand = new DeleteObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: oldImagePath.split("/").pop()!,
-    });
-    await s3.send(deleteImageObjectCommand);
+    if (newImagePath && newImagePath !== oldImagePath) {
+      const deleteImageObjectCommand = new DeleteObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: oldImagePath.split("/").pop()!,
+      });
+      await s3.send(deleteImageObjectCommand);
+    }
 
     // update song information in the database
+    const updateData = {
+      title: title ? title : song.title,
+      artist: artist ? artist : song.artist,
+      songPath: newSongPath ? newSongPath : song.songPath,
+      imagePath: newImagePath ? newImagePath : song.imagePath,
+    };
     const updatedFile = await tx
       .update(songs)
-      .set({
-        title: newTitle,
-        artist: newArtist,
-        songPath: newSongPath,
-        imagePath: newImagePath,
-      })
+      .set(updateData)
       .where(eq(songs.id, songId))
       .returning()
       .then((res) => res[0]);
