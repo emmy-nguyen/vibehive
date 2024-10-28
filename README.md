@@ -11,6 +11,7 @@ All functionalities:
 - Log in and log out
 - Upload a music file including an image
 - Play music
+- Edit song's information
 - Delete music files from the user's profile
 
 ## Getting Started
