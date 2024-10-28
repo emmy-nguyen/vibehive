@@ -22,14 +22,22 @@ const EditProfileModal = () => {
     },
   });
 
+  const onChange = (open: boolean) => {
+    if (!open) {
+      // close form, reset form
+      reset();
+      editProfileModal.onClose();
+    }
+  };
+
   const onSubmit = () => {};
   return (
     <div>
       <Modal
         title="Edit Profile"
-        description="What username you wanna change 😈"
+        description="What would you like to update your username to? 😈"
         isOpen={editProfileModal.isOpen}
-        onChange={() => {}}
+        onChange={onChange}
       >
         <form onSubmit={() => {}} className="flex flex-col gap-y-4">
           <Input
