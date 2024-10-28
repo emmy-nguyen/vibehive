@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       .where(eq(songs.id, parseInt(id)))
       .limit(1);
 
-    console.log("getSongUrl", JSON.stringify(result, null, 2));
+    console.log("getSongUrl API", JSON.stringify(result, null, 2));
     if (result.length > 0) {
       return NextResponse.json({ url: result[0].songPath });
     } else {

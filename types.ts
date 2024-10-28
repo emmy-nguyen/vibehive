@@ -9,9 +9,9 @@ export interface Song {
 }
 
 export interface SongStore {
-  songs: Song[];
-  setSongs: (songs: Song[]) => void;
-  deleteSongs: (id: number) => Promise<void>;
+  songData: SongData | null;
+  setSongData: (data: SongData) => void;
+  clearSongData: () => void;
 }
 
 export interface SongData {
@@ -19,7 +19,7 @@ export interface SongData {
   title: string;
   artist: string;
   songUrl: string;
-  imageUrl: string;
+  imageUrl: string | null;
 }
 
 export interface EditSongContextType {

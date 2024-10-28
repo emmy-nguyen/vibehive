@@ -15,26 +15,22 @@ const s3 = new S3Client({
   },
 });
 
-const computeSHA256 = async (file: File) => {
-  const buffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return hashHex;
-};
-
 export async function editSong(
   songId: number,
   newTitle: string,
   newArtist: string,
-  newSongFile?: File,
-  newImageFile?: File
+  oldImagePath: string,
+  oldSongPath: string,
+  newSongPath?: string,
+  newImagePath?: string
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return { failure: "Not authenticated" };
+  }
+
+  if (!newSongPath && !newSongPath && !newTitle && !newArtist) {
+    return { failure: "No field" };
   }
   await db.transaction(async (tx) => {
     const song = await tx
@@ -46,81 +42,25 @@ export async function editSong(
       .then((res) => res[0]);
 
     if (!song) {
+      console.log("Song not found");
       return { failure: "Song not found" };
     }
 
-    // initialize the value of newSongPath and newImagePath
-    let newSongPath = song.songPath;
-    let newImagePath = song.imagePath;
+    // delete old song and image from S3 bucket
+    const deleteSongObjectCommand = new DeleteObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: oldSongPath.split("/").pop()!,
+    });
+    await s3.send(deleteSongObjectCommand);
 
-    // check if there is a newSongFile
-    if (newSongFile) {
-      if (song.songPath) {
-        // delete song file in S3 bucket
-        const deleteSongObjectCommand = new DeleteObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME!,
-          Key: song.songPath.split("/").pop()!,
-        });
-        await s3.send(deleteSongObjectCommand);
-      }
-      // upload new song file to S3 bucket
-      const songSignedURLResult = await getSignedURL({
-        fileName: newSongFile.name,
-        fileType: newSongFile.type,
-        fileSize: newSongFile.size,
-        checksum: await computeSHA256(newSongFile),
-      });
-
-      if (!songSignedURLResult.success) {
-        console.error("Error to get songSignedURL");
-        return { failure: "Error to get songSignedURL" };
-      }
-
-      // upload a new song to S3 bucket
-      const songSignedURL = songSignedURLResult.success.url;
-      await fetch(songSignedURL, {
-        method: "PUT",
-        body: newSongFile,
-        headers: { "Content-Type": newSongFile.type },
-      });
-      newSongPath = songSignedURL.split("?")[0];
-    }
-
-    // check if there is a newImageFile
-    if (newImageFile) {
-      if (song.imagePath) {
-        // delete image file in S3 bucket
-        const deleteImageObjectCommand = new DeleteObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME!,
-          Key: song.imagePath.split("/").pop()!,
-        });
-        await s3.send(deleteImageObjectCommand);
-      }
-      // upload new image file to S3 bucket
-      const imageSignedURLResult = await getSignedURL({
-        fileName: newImageFile.name,
-        fileType: newImageFile.type,
-        fileSize: newImageFile.size,
-        checksum: await computeSHA256(newImageFile),
-      });
-
-      if (!imageSignedURLResult.success) {
-        console.error("Error to get imageSignedURL");
-        return { failure: "Error to get imageSignedURL" };
-      }
-
-      // upload a new image to S3 bucket
-      const imageSignedURL = imageSignedURLResult.success.url;
-      await fetch(imageSignedURL, {
-        method: "PUT",
-        body: newImageFile,
-        headers: { "Content-Type": newImageFile.type },
-      });
-      newImagePath = imageSignedURL.split("?")[0];
-    }
+    const deleteImageObjectCommand = new DeleteObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: oldImagePath.split("/").pop()!,
+    });
+    await s3.send(deleteImageObjectCommand);
 
     // update song information in the database
-    await tx
+    const updatedFile = await tx
       .update(songs)
       .set({
         title: newTitle,
@@ -128,7 +68,10 @@ export async function editSong(
         songPath: newSongPath,
         imagePath: newImagePath,
       })
-      .where(eq(songs.id, songId));
+      .where(eq(songs.id, songId))
+      .returning()
+      .then((res) => res[0]);
+    console.log("Song updated successfully", updatedFile);
     return { success: "Song updated successfully" };
   });
 }

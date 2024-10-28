@@ -9,6 +9,7 @@ import Button from "../Button";
 import toast from "react-hot-toast";
 import ToastMessage from "../toastMessage/toastmessage";
 import { getSignedURL, uploadFile } from "@/app/_action/upload-action";
+import computeSHA256 from "@/app/_helper/computeSHA256";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,17 +56,6 @@ const UploadModal = () => {
       setFileUrl(undefined);
       uploadModal.onClose();
     }
-  };
-
-  // function for checksum
-  const computeSHA256 = async (file: File) => {
-    const buffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
   };
 
   // upload song&image functionality

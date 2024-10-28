@@ -8,19 +8,19 @@ import { useSongStore } from "../hooks/useSongStore";
 import ToastMessage from "./toastMessage/toastmessage";
 
 export default function SongList({ initialSongs }: { initialSongs: Song[] }) {
-  //   const [allSongs, setAllSongs] = useState<Song[]>(initialSongs);
-  const { songs, setSongs, deleteSongs } = useSongStore();
+  // const [allSongs, setAllSongs] = useState<Song[]>(initialSongs);
+  const [songs, setSongs] = useState<Song[]>(initialSongs);
   const [isToastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    setSongs(initialSongs);
-  }, [initialSongs, setSongs]);
+  // useEffect(() => {
+  //   setSongs(initialSongs);
+  // }, [initialSongs, setSongs]);
 
   const handleDeleteSong = async (songId: number) => {
     try {
       await deleteSong(songId);
-      setSongs(songs.filter((song) => song.id !== songId));
+      setSongs((prevSongs) => prevSongs.filter((song) => song.id !== songId));
       setToastOpen(true);
       setToastMessage("Song deleted successfully!");
     } catch (err) {

@@ -7,10 +7,15 @@ import UploadModal from "../components/upload/UploadModal";
 import EditSongModal from "../components/edit/EditSongModal";
 
 interface ModalProviderProps {
-  songId: string;
+  songData: {
+    title: string;
+    artist: string;
+    songUrl: string;
+    imageUrl: string;
+  };
 }
 
-const ModalProvider = () => {
+const ModalProvider = ({ props }: { props: ModalProviderProps }) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -24,7 +29,7 @@ const ModalProvider = () => {
     <>
       <AuthModal />
       <UploadModal />
-      <EditSongModal />
+      <EditSongModal props={props} />
     </>
   );
 };

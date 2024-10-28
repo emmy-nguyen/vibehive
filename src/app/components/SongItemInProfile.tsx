@@ -4,6 +4,7 @@ import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import useAuthModal from "../hooks/useAuthModal";
 // import { useEditSong } from "../context/EditSongContext";
 import useEditModal from "../hooks/useEditModal";
+import { useSongStore } from "../hooks/useSongStore";
 // import useEditModal, { useEditSong } from "../context/EditSongContext";
 
 interface SongItemInProfileProps {
@@ -11,7 +12,7 @@ interface SongItemInProfileProps {
   title: string;
   artist: string;
   imagePath: string | null;
-  // songUrl: string;
+  songPath: string;
   onDelete: (id: number) => void;
 }
 export default function SongItemInProfile({
@@ -19,17 +20,19 @@ export default function SongItemInProfile({
   title,
   artist,
   imagePath,
-  // songUrl,
+  songPath,
   onDelete,
 }: SongItemInProfileProps) {
   const { data: session } = useSession();
   const authModal = useAuthModal();
   const editModal = useEditModal();
+  const setSongData = useSongStore((state) => state.setSongData);
 
   const handleOpenModal = () => {
     if (!session) {
       return authModal.onOpen();
     }
+    setSongData({ id, title, artist, songUrl: songPath, imageUrl: imagePath });
     return editModal.onOpen();
   };
   return (
