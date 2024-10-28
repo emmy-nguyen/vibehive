@@ -5,6 +5,7 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 import { and, db, eq } from "@/db/index";
 import { songs } from "@/db/schema/songs";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { revalidatePath } from "next/cache";
 
 const s3 = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
@@ -60,4 +61,5 @@ export async function deleteSong(songId: number) {
     }
     console.log("delete", songId);
   });
+  revalidatePath("/");
 }

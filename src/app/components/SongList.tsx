@@ -6,30 +6,26 @@ import { deleteSong } from "../_action/delete-action";
 import SongItemInProfile from "./SongItemInProfile";
 import { useSongStore } from "../hooks/useSongStore";
 import ToastMessage from "./toastMessage/toastmessage";
+import toast from "react-hot-toast";
 
 export default function SongList({ initialSongs }: { initialSongs: Song[] }) {
   // const [allSongs, setAllSongs] = useState<Song[]>(initialSongs);
   const [songs, setSongs] = useState<Song[]>(initialSongs);
-  const [isToastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   setSongs(initialSongs);
-  // }, [initialSongs, setSongs]);
+  useEffect(() => {
+    setSongs(initialSongs);
+  }, [initialSongs, setSongs]);
 
   const handleDeleteSong = async (songId: number) => {
     try {
       await deleteSong(songId);
       setSongs((prevSongs) => prevSongs.filter((song) => song.id !== songId));
-      setToastOpen(true);
-      setToastMessage("Song deleted successfully!");
+      toast.success("Song deleted successfully!");
     } catch (err) {
       console.error("Failed to delete song", err);
-      setToastOpen(true);
-      setToastMessage("Failed to delete song. Please try again later.");
+      toast.error("Failed to delete song. Please try again later.");
     } finally {
-      setToastOpen(false);
-      setTimeout(() => setToastOpen(false), 3000);
+      // something here
     }
   };
 
@@ -42,14 +38,6 @@ export default function SongList({ initialSongs }: { initialSongs: Song[] }) {
           onDelete={handleDeleteSong}
         />
       ))}
-
-      {isToastOpen && (
-        <ToastMessage
-          title={toastMessage || "Something wrong when deleting..."}
-          isOpen={isToastOpen}
-          onOpenChange={setToastOpen}
-        />
-      )}
     </div>
   );
 }

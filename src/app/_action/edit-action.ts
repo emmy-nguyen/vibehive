@@ -6,6 +6,7 @@ import { and, db, eq } from "@/db/index";
 import { songs } from "@/db/schema/songs";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedURL } from "./upload-action";
+import { revalidatePath } from "next/cache";
 
 const s3 = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
@@ -88,4 +89,5 @@ export async function editSong(
     console.log("Song updated successfully", updatedFile);
     return { success: "Song updated successfully" };
   });
+  revalidatePath("/");
 }
