@@ -2,10 +2,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import useAuthModal from "../hooks/useAuthModal";
-// import { useEditSong } from "../context/EditSongContext";
-import useEditModal from "../hooks/useEditModal";
 import { useSongStore } from "../hooks/useSongStore";
-// import useEditModal, { useEditSong } from "../context/EditSongContext";
+import useEditModal from "../hooks/useEditModal";
 
 interface SongItemInProfileProps {
   id: number;

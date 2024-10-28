@@ -6,13 +6,13 @@ import Modal from "../Modal";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Button from "../Button";
-import useEditModal from "@/app/hooks/useEditModal";
 import { useSongStore } from "@/app/hooks/useSongStore";
 import Image from "next/image";
 import { editSong } from "@/app/_action/edit-action";
 import { getSignedURL } from "@/app/_action/upload-action";
 import computeSHA256 from "@/app/_helper/computeSHA256";
 import toast from "react-hot-toast";
+import useEditModal from "@/app/hooks/useEditModal";
 
 const EditSongModal = () => {
   const { data: session } = useSession();

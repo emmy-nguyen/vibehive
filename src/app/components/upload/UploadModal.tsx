@@ -7,20 +7,16 @@ import useUploadModal from "../../hooks/useUploadModal";
 import Input from "../Input";
 import Button from "../Button";
 import toast from "react-hot-toast";
-// import ToastMessage from "../toastMessage/toastmessage";
 import { getSignedURL, uploadFile } from "@/app/_action/upload-action";
 import computeSHA256 from "@/app/_helper/computeSHA256";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
-  // const [isToastOpen, setToastOpen] = useState(false);
-  // const [toastMessage, setToastMessage] = useState<string | null>(null);
   const uploadModal = useUploadModal();
   const { data: session } = useSession();
   const user = session?.user;
   const [file, setFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
-  // const { toasts, handlers } = useToaster();
 
   const { register, handleSubmit, reset } = useForm<FieldValues>({
     defaultValues: {

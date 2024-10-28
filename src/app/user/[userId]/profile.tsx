@@ -1,9 +1,12 @@
+"use client";
 import TableHeader from "@/app/components/TableHeader";
 import React from "react";
 import { Song } from "../../../../types";
 import SongList from "@/app/components/SongList";
+import useEditProfileModal from "@/app/hooks/useEditProfileModal";
+import useAuthModal from "@/app/hooks/useAuthModal";
 
-export default async function Profile({
+export default function Profile({
   user,
   songs,
 }: {
@@ -12,6 +15,15 @@ export default async function Profile({
   };
   songs: Song[];
 }) {
+  const editProfileModal = useEditProfileModal();
+  const authModal = useAuthModal();
+
+  const handleOpenModal = () => {
+    if (!user) {
+      return authModal.onOpen();
+    }
+    return editProfileModal.onOpen();
+  };
   return (
     <div className="bg-neutral-900 min-h-screen text-white">
       {/* Header */}
@@ -26,7 +38,10 @@ export default async function Profile({
             <h1 className="text-6xl font-semibold">{user.username}</h1>
           </div>
         </div>
-        <button className="bg-white hover:bg-yellow-500 hover:text-white text-neutral-900 py-2 px-4 rounded-lg font-semibold">
+        <button
+          onClick={handleOpenModal}
+          className="bg-white hover:bg-yellow-500 hover:text-white text-neutral-900 py-2 px-4 rounded-lg font-semibold"
+        >
           Edit Profile
         </button>
       </header>
