@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { and, db, eq } from "@/db/index";
 import { liked } from "@/db/schema/liked";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import toast from "react-hot-toast";
 
 interface LikeButtonProps {
   songId: string;
@@ -26,7 +27,9 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/like?songId=${songId}&userId=${session?.user?.id}`
+          `/api/like?songId=${encodeURIComponent(
+            songId
+          )}&userId=${encodeURIComponent(userId)}`
         );
         const data = await response.json();
         setIsLiked(data.liked);
@@ -39,15 +42,30 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
 
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (!userId) return authModal.onOpen();
 
-    if (isLiked) {
+    try {
+      const response = await fetch(`/api/like`, {
+        method: isLiked ? "DELETE" : "POST",
+        body: JSON.stringify({ songId, userId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        setIsLiked(!isLiked);
+        router.refresh();
+      } else {
+        toast.error("Error updating like status");
+      }
+    } catch (error) {
+      toast.error("Error updating like status");
     }
   };
   return (
     <button onClick={handleLike} className="hover: opacity-75 transition">
-      <Icon color={isLiked ? "#22c55e" : "white"} size={25} />{" "}
+      <Icon color={isLiked ? "#EAB308" : "white"} size={25} />{" "}
     </button>
   );
 };
