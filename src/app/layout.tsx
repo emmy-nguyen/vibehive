@@ -14,6 +14,9 @@ const font = Figtree({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "VibeHive",
   description: "MiFaSol",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default async function RootLayout({
