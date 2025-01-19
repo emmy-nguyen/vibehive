@@ -15,8 +15,13 @@ export async function getLikedSongs() {
   try {
     const allLikedSongs = await db
       .select({
+        id: songs.id,
         title: songs.title,
         artist: songs.artist,
+        imagePath: songs.imagePath,
+        createdAt: liked.createdAt,
+        songPath: songs.songPath,
+        userId: songs.userId,
       })
       .from(liked)
       .innerJoin(songs, eq(liked.songId, songs.id))
