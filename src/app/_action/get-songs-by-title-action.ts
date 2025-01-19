@@ -1,7 +1,7 @@
 "use server";
 import { songs } from "@/db/schema/songs";
 import { getServerSession } from "next-auth";
-import { db, desc, eq } from "@/db/index";
+import { db, desc, eq, sql } from "@/db/index";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getSongs } from "./get-songs-action";
 
@@ -10,7 +10,7 @@ export async function getSongsByTitle(title: string) {
     const session = await getServerSession(authOptions);
     if (!session) {
       console.log("User not found");
-      return;
+      return [];
     }
 
     if (!title) {
@@ -20,7 +20,7 @@ export async function getSongsByTitle(title: string) {
     const songsByTitle = await db
       .select()
       .from(songs)
-      .where(eq(songs.title, title))
+      .where(sql`${songs.title} ILIKE ${`%${title}%`}`)
       .orderBy(desc(songs.createdAt));
     return songsByTitle;
   } catch (error) {
