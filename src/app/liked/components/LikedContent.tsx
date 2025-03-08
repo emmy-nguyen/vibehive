@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import MediaItem from "@/app/components/MediaItem";
 import LikeButton from "@/app/components/LikeButton";
+import useOnPlay from "@/app/hooks/useOnPlay";
 
 interface LikedContentProps {
   songs: Song[];
@@ -13,6 +14,7 @@ interface LikedContentProps {
 const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
   const router = useRouter();
   const user = useSession();
+  const onPlay = useOnPlay(songs);
 
   useEffect(() => {
     if (!user) {
@@ -32,7 +34,10 @@ const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
       {songs.map((song) => (
         <div key={song.id} className="flex items-center gap-x-4 w-full">
           <div className="flex-1">
-            <MediaItem onClick={() => {}} data={song} />
+            <MediaItem
+              onClick={(id: number) => onPlay(String(id))}
+              data={song}
+            />
           </div>
           <LikeButton songId={song.id.toString()} />
         </div>
