@@ -23,14 +23,14 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
       <div className="relative rounded-md min-h-[48px] max-h-[48px] w-[48px] h-[48px] overflow-hidden">
         <Image
           fill // have to use "w-[48px] h-[48px]"" in div to use "fill"
-          src={data.imagePath ? data.imagePath : "/images/default.jpeg"}
+          src={data?.imagePath ?? "/images/default.jpeg"}
           alt="Media Item"
           className="object-cover"
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden">
-        <p className="text-white truncate">{data.title}</p>
-        <p className="text-neutral-400 text-sm truncate">{data.artist}</p>
+        <p className="text-white truncate">{data?.title}</p>
+        <p className="text-neutral-400 text-sm truncate">{data?.artist}</p>
       </div>
     </div>
   );

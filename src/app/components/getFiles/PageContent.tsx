@@ -4,12 +4,14 @@ import SongItem from "./SongItem";
 import { Song } from "../../../../types";
 import { useSongStore } from "@/app/hooks/useSongStore";
 import { useEffect } from "react";
+import useOnPlay from "@/app/hooks/useOnPlay";
 
 interface PageContentProps {
   songs: Song[];
 }
 
 const PageContent: React.FC<PageContentProps> = ({ songs: initialSongs }) => {
+  const onPlay = useOnPlay(initialSongs);
   if (initialSongs.length === 0) {
     return <div className="mt-4 text-neutral-400">No songs available</div>;
   }
@@ -20,7 +22,11 @@ const PageContent: React.FC<PageContentProps> = ({ songs: initialSongs }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-8 gap-4 mt-4">
       {initialSongs.map((item) => (
-        <SongItem key={item.id} onClick={() => {}} data={item} />
+        <SongItem
+          key={item.id}
+          onClick={(id: number) => onPlay(String(id))}
+          data={item}
+        />
       ))}
     </div>
   );

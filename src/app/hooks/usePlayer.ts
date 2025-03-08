@@ -113,3 +113,129 @@ const usePlayer = create<PlayerStore>((set, get) => ({
 }));
 
 export default usePlayer;
+// import { create } from "zustand";
+
+// interface PlayerStore {
+//   ids: string[];
+//   activeId?: string;
+//   activeUrl?: string;
+//   isPlaying: boolean;
+//   isLoading: boolean;
+//   audio: HTMLAudioElement | null;
+//   setId: (id: string) => void;
+//   setIds: (ids: string[]) => void;
+//   play: () => void;
+//   pause: () => void;
+//   next: () => void;
+//   previous: () => void;
+//   reset: () => void;
+// }
+
+// const usePlayer = create<PlayerStore>((set, get) => ({
+//   ids: [],
+//   activeId: undefined,
+//   activeUrl: undefined,
+//   isPlaying: false,
+//   isLoading: false,
+//   audio: null,
+
+//   setId: async (id: string) => {
+//     set({ isLoading: true });
+
+//     try {
+//       const response = await fetch(`/api/getSongUrl?id=${id}`);
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch song URL");
+//       }
+
+//       const data = await response.json();
+//       if (!data.url) {
+//         throw new Error("Invalid song URL");
+//       }
+
+//       // Stop current audio if it exists
+//       get().audio?.pause();
+//       get().audio?.remove();
+
+//       const newAudio = new Audio(data.url);
+
+//       newAudio.oncanplay = () => {
+//         set({
+//           activeId: id,
+//           activeUrl: data.url,
+//           audio: newAudio,
+//           isPlaying: true,
+//           isLoading: false,
+//         });
+
+//         newAudio.play().catch((err) => {
+//           console.error("Failed to play audio:", err);
+//           set({ isPlaying: false });
+//         });
+//       };
+
+//       newAudio.onerror = () => {
+//         console.error("Failed to load audio:", newAudio.error);
+//         set({ isPlaying: false, isLoading: false, activeUrl: undefined });
+//       };
+//     } catch (err) {
+//       console.error("Error in setId:", err);
+//       set({
+//         isPlaying: false,
+//         isLoading: false,
+//         activeUrl: undefined,
+//       });
+//     }
+//   },
+
+//   setIds: (ids: string[]) => set({ ids }),
+
+//   play: () => {
+//     const { audio } = get();
+//     if (audio) {
+//       audio.play().catch((err) => console.error("Failed to play audio:", err));
+//       set({ isPlaying: true });
+//     }
+//   },
+
+//   pause: () => {
+//     const { audio } = get();
+//     if (audio) {
+//       audio.pause();
+//       set({ isPlaying: false });
+//     }
+//   },
+
+//   next: () => {
+//     const { ids, activeId } = get();
+//     const currentIndex = activeId ? ids.indexOf(activeId) : -1;
+//     if (currentIndex >= 0 && currentIndex < ids.length - 1) {
+//       get().setId(ids[currentIndex + 1]);
+//     }
+//   },
+
+//   previous: () => {
+//     const { ids, activeId } = get();
+//     const currentIndex = activeId ? ids.indexOf(activeId) : -1;
+//     if (currentIndex > 0) {
+//       get().setId(ids[currentIndex - 1]);
+//     }
+//   },
+
+//   reset: () => {
+//     const { audio } = get();
+//     if (audio) {
+//       audio.pause();
+//       audio.currentTime = 0;
+//     }
+//     set({
+//       ids: [],
+//       activeId: undefined,
+//       activeUrl: undefined,
+//       isPlaying: false,
+//       audio: null,
+//     });
+//   },
+// }));
+
+// export default usePlayer;
