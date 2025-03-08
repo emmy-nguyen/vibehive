@@ -10,24 +10,24 @@ interface SongItemProps {
   onClick: (id: number) => void;
 }
 const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
-  const player = usePlayer();
+  // const player = usePlayer();
 
-  const handlePlay = async (event: React.MouseEvent) => {
-    // prevent triggering onClick of the parent div
-    event.stopPropagation();
+  // const handlePlay = async (event: React.MouseEvent) => {
+  //   // prevent triggering onClick of the parent div
+  //   event.stopPropagation();
 
-    if (player.activeId === String(data.id)) {
-      if (player.isPlaying) {
-        player.pause();
-      } else {
-        player.play();
-      }
-    } else {
-      await player.setId(String(data.id));
-    }
-  };
-  const isThisSongPlaying =
-    player.activeId === String(data.id) && player.isPlaying;
+  //   if (player.activeId === String(data.id)) {
+  //     if (player.isPlaying) {
+  //       player.pause();
+  //     } else {
+  //       player.play();
+  //     }
+  //   } else {
+  //     await player.setId(String(data.id));
+  //   }
+  // };
+  // const isThisSongPlaying =
+  //   player.activeId === String(data.id) && player.isPlaying;
   return (
     <div
       onClick={() => onClick(data.id)}
@@ -50,17 +50,17 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
       </div>
       <div className="absolute bottom-24 right-5">
         <button
-          onClick={handlePlay}
-          disabled={player.isLoading}
+          // onClick={handlePlay}
+          // disabled={player.isLoading}
           className="transition opacity-0 rounded-full flex items-center bg-yellow-500 p-4 drop-shadow-md translate translate-y-1/4 group-hover:opacity-100 group-hover:translate-y-0 hover:scale-110"
         >
-          {player.isLoading && player.activeId === String(data.id) ? (
+          {/* {player.isLoading && player.activeId === String(data.id) ? (
             "Loading"
           ) : isThisSongPlaying ? (
             <FaPause className="text-gray-950" />
-          ) : (
-            <FaPlay className="text-gray-950" />
-          )}
+          ) : ( */}
+          <FaPlay className="text-gray-950" />
+          {/* )} */}
         </button>
       </div>
     </div>
