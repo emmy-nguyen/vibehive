@@ -5,6 +5,7 @@ import { Song } from "../../../../types";
 import SongList from "@/app/components/SongList";
 import useEditProfileModal from "@/app/hooks/useEditProfileModal";
 import useAuthModal from "@/app/hooks/useAuthModal";
+import Image from "next/image";
 
 export default function Profile({
   user,
@@ -29,7 +30,7 @@ export default function Profile({
       {/* Header */}
       <header className="flex items-end justify-between p-6 h-80 bg-gradient-to-b from-neutral-500 to-black shadow-md rounded-lg">
         <div className="flex items-center">
-          <img
+          <Image
             src="/images/defaultAvatar.jpeg"
             alt="User Avatar"
             className="w-36 h-36 rounded-full"
