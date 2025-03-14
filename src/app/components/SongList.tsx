@@ -9,7 +9,6 @@ import ToastMessage from "./toastMessage/toastmessage";
 import toast from "react-hot-toast";
 
 export default function SongList({ initialSongs }: { initialSongs: Song[] }) {
-  // const [allSongs, setAllSongs] = useState<Song[]>(initialSongs);
   const [songs, setSongs] = useState<Song[]>(initialSongs);
 
   useEffect(() => {
@@ -24,8 +23,6 @@ export default function SongList({ initialSongs }: { initialSongs: Song[] }) {
     } catch (err) {
       console.error("Failed to delete song", err);
       toast.error("Failed to delete song. Please try again later.");
-    } finally {
-      // something here
     }
   };
 

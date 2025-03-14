@@ -34,6 +34,8 @@ export default function Profile({
             src="/images/defaultAvatar.jpeg"
             alt="User Avatar"
             className="w-36 h-36 rounded-full"
+            width={100}
+            height={100}
           />
           <div className="ml-6">
             <h1 className="text-6xl font-semibold">{user.username}</h1>
